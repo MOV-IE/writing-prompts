@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>오늘의 글감</title>
+<meta name="author" content="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@400;500;700&family=Nanum+Myeongjo:wght@400;700&display=swap">
+<style>
+:root{
+  --bg:#ffffff; --surface:#ffffff; --surface-2:#f1f7f2; --ink:#1a2320; --muted:#5f6d66;
+  --line:#dfe8e2; --accent:#2e8b4e; --accent-ink:#ffffff; --accent-soft:#e3f3e8;
+  --f-body:"Gothic A1","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-prompt:"Nanum Myeongjo","AppleMyungjo",serif;
+  --r:16px; color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:28px 16px 64px}
+header h1{font-size:1.5rem;margin:0 0 4px;letter-spacing:-.01em}
+header p{margin:0;color:var(--muted);font-size:.92rem}
+nav{display:flex;gap:6px;overflow-x:auto;margin:22px -16px 0;padding:0 16px 6px;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--muted);
+  font:500 .88rem var(--f-body);padding:9px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+nav button .n{display:inline-block;width:1.4em;height:1.4em;line-height:1.4em;text-align:center;border-radius:50%;
+  background:var(--surface-2);font-size:.78rem;margin-right:6px;font-weight:700}
+nav button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+nav button[aria-selected="true"] .n{background:rgba(255,255,255,.25)}
+.panel{display:none;margin-top:18px}
+.panel.on{display:block}
+.guide{color:var(--muted);font-size:.9rem;margin:0 0 14px}
+.card{background:rgba(46,139,78,.07);border:1px solid rgba(46,139,78,.16);border-radius:var(--r);padding:22px 20px}
+.label{font-size:.78rem;font-weight:700;color:var(--accent);letter-spacing:.04em;margin-bottom:8px}
+.big{font-family:var(--f-prompt);font-size:1.6rem;font-weight:700;margin:0 0 4px;word-break:keep-all}
+.prompt{font-family:var(--f-prompt);font-size:1.18rem;line-height:1.75;margin:0;word-break:keep-all}
+ol.qs{margin:14px 0 0;padding-left:1.4em}
+ol.qs li{margin:8px 0;word-break:keep-all}
+ul.rules{list-style:none;margin:6px 0 0;padding:0}
+ul.rules li{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px dashed var(--line);word-break:keep-all}
+ul.rules li:first-child{border-top:0}
+.tag{flex:0 0 auto;font-size:.72rem;font-weight:700;background:var(--accent-soft);color:var(--accent);padding:2px 8px;border-radius:6px;margin-top:3px}
+.pair{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin:6px 0 14px}
+.pair span.w{font-family:var(--f-prompt);font-size:1.7rem;font-weight:700}
+.pair span.x{color:var(--muted);font-size:1.2rem}
+.hint{background:rgba(255,255,255,.75);border-radius:10px;padding:10px 14px;font-size:.95rem;color:var(--ink);word-break:keep-all}
+.hint b{color:var(--accent);font-size:.78rem;margin-right:6px}
+.mode{display:flex;gap:6px;margin-bottom:14px}
+.mode button{border:1px solid var(--line);background:var(--surface);color:var(--muted);font:500 .85rem var(--f-body);padding:6px 12px;border-radius:8px;cursor:pointer}
+.mode button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.btn{border:0;background:var(--accent);color:var(--accent-ink);font:700 .92rem var(--f-body);padding:11px 18px;border-radius:10px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line)}
+.btn:active{transform:translateY(1px)}
+textarea{width:100%;min-height:220px;margin-top:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);
+  color:var(--ink);font:400 1rem/1.8 var(--f-body);padding:16px;resize:vertical}
+textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.meta{display:flex;justify-content:space-between;color:var(--muted);font-size:.8rem;margin-top:6px}
+.archive{margin-top:40px}
+.archive h2{font-size:1.05rem;margin:0 0 10px}
+.entry{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.entry .top{display:flex;justify-content:space-between;gap:10px;font-size:.78rem;color:var(--muted)}
+.entry .p{font-weight:700;font-size:.9rem;margin:6px 0;word-break:keep-all}
+.entry .t{white-space:pre-wrap;font-size:.92rem;margin:0;max-height:7.5em;overflow:hidden}
+.entry.open .t{max-height:none}
+.entry button{border:0;background:none;color:var(--muted);font:500 .78rem var(--f-body);cursor:pointer;padding:0 0 0 8px}
+.empty{color:var(--muted);font-size:.9rem}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:.88rem;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>오늘의 글감</h1>
+    <p>단계를 하나 골라 글감을 뽑고, 아래 칸에 바로 써 보세요.</p>
+  </header>
+
+  <nav role="tablist" id="tabs"></nav>
+
+  <!-- 1 -->
+  <section class="panel" id="p1">
+    <p class="guide">평범한 물건 하나를 붙잡고 다섯 가지 질문으로 심문해 보세요.</p>
+    <div class="card">
+      <div class="label">오늘의 물건</div>
+      <p class="big" id="obj"></p>
+      <ol class="qs" id="objQs"></ol>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="panel" id="p2">
+    <p class="guide">잊고 있던 어린 시절이나 오래된 기억을 하나 꺼내 보세요.</p>
+    <div class="card">
+      <div class="label">기억을 여는 질문</div>
+      <p class="prompt" id="mem"></p>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="panel" id="p3">
+    <p class="guide">주어진 문장으로 시작하거나, 주어진 문장으로 끝나도록 써 보세요.</p>
+    <div class="mode" id="lineMode">
+      <button type="button" data-m="first" aria-pressed="true">첫 문장</button>
+      <button type="button" data-m="last" aria-pressed="false">끝 문장</button>
+    </div>
+    <div class="card">
+      <div class="label" id="lineLabel">이 문장으로 시작하세요</div>
+      <p class="prompt" id="line"></p>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="panel" id="p4">
+    <p class="guide">아래 세 가지 규칙을 모두 지키며 한 편을 써 보세요. 주제는 자유예요.</p>
+    <div class="card">
+      <div class="label">오늘의 미션</div>
+      <ul class="rules" id="rules"></ul>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="panel" id="p5">
+    <p class="guide">멀리 떨어진 두 단어 사이에 다리를 놓아 보세요.</p>
+    <div class="card">
+      <div class="label">오늘의 두 단어</div>
+      <div class="pair"><span class="w" id="w1"></span><span class="x">×</span><span class="w" id="w2"></span></div>
+      <div class="hint"><b>힌트</b><span id="hint"></span></div>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button class="btn" type="button" id="next">다른 글감 뽑기</button>
+    <button class="btn ghost" type="button" id="save">보관함에 저장</button>
+  </div>
+
+  <textarea id="draft" placeholder="여기에 써 보세요. 쓰는 동안 자동으로 임시 저장돼요."></textarea>
+  <div class="meta"><span id="count">0자</span><span id="saved"></span></div>
+
+  <section class="archive">
+    <h2>보관함</h2>
+    <div id="list"></div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- 데이터 ---------- */
+const OBJECTS = ["커튼","칫솔","열쇠","컵","우산","베개","거울","신발끈","지우개","냉장고","빗","손톱깎이","리모컨","달력","양말","안경","머그잔","휴지","젓가락","가방","손목시계","지갑","문고리","이불","화분","충전기","연필","책갈피","냄비","현관 매트","옷걸이","전등 스위치","수건","영수증","도장","손거울","창문","빨래집게","계단"];
+
+const OBJ_Q = [
+  "{o}{은} 언제부터 당신 곁에 있었나요? 처음 손에 넣은 날을 기억하나요?",
+  "{o}{이} 하루 동안 당신을 지켜본다면, 당신에 대해 무엇을 알게 될까요?",
+  "{o}{이} 사라진다면 당신의 하루에서 가장 먼저 무너지는 것은 무엇일까요?",
+  "{o}{을} 마지막으로 제대로 들여다본 건 언제인가요? 그때 무엇이 보였나요?",
+  "{o}{은} 무엇을 숨기고, 무엇을 드러내는 물건인가요?",
+  "{o}{와} 닮은 사람이 주변에 있나요? 어떤 점이 닮았나요?",
+  "{o}에 얽힌 가장 오래된 장면은 무엇인가요?",
+  "{o}{을} 누군가에게 빌려주거나 빌린 적이 있나요? 그 사람은 지금 어디에 있나요?",
+  "{o}{이} 말을 할 수 있다면, 당신에게 가장 먼저 하고 싶은 불평은 무엇일까요?",
+  "당신이 {o}{을} 다루는 방식은 당신이 사람을 대하는 방식과 비슷한가요?",
+  "{o}{이} 없던 시절의 사람들은 그 빈자리를 무엇으로 채웠을까요?",
+  "{o}{을} 버려야 할 때를 당신은 어떻게 알아차리나요?",
+  "{o}{은} 당신을 편하게 해 주나요, 아니면 무언가를 참게 만드나요?",
+  "집 안의 {o}{을} 다른 사람의 것과 바꾼다면 무엇이 어색해질까요?",
+  "{o}{을} 고를 때 당신이 끝내 양보하지 못하는 기준은 무엇인가요?",
+  "{o}{은} 어떤 소리를 내나요? 그 소리를 들으면 무엇이 떠오르나요?",
+  "{o}{을} 처음 본 외계인에게 설명한다면, 무엇부터 말하겠어요?",
+  "10년 뒤에도 같은 {o}{을} 쓰고 있다면, 그건 좋은 일일까요?"
+];
+
+const MEMORY = [
+  "어릴 때 혼자 몰래 숨어 있던 장소가 있었나요? 그곳에서 무엇을 했나요?",
+  "초등학생 시절, 매일 지나던 등굣길에 있던 가게 하나를 떠올려 보세요. 그 가게 주인은 어떤 사람이었나요?",
+  "처음으로 거짓말이 들켰던 날을 기억하나요? 누구에게, 무엇 때문이었나요?",
+  "어린 시절 집에서 나던 냄새 중 지금도 기억나는 것은 무엇인가요?",
+  "어릴 때 가장 갖고 싶었지만 끝내 갖지 못한 물건은 무엇이었나요?",
+  "어른들이 하는 말을 엿듣다가 이해하지 못했던 대화가 있었나요?",
+  "처음으로 혼자 버스나 지하철을 탄 날, 어디에 가고 있었나요?",
+  "아플 때 누군가 해 주던 음식이 있었나요? 지금 그 맛을 설명할 수 있나요?",
+  "어릴 적 친했지만 지금은 연락이 끊긴 친구 한 명을 떠올려 보세요. 마지막으로 나눈 대화는 무엇이었나요?",
+  "어린 시절 살던 집의 현관문을 열면 가장 먼저 무엇이 보였나요?",
+  "어릴 때 무서워했던 것 중 지금 생각하면 웃긴 것은 무엇인가요?",
+  "명절이나 가족 모임에서 늘 반복되던 장면이 있었나요?",
+  "처음으로 무언가를 잃어버리고 오래 찾았던 기억이 있나요?",
+  "어릴 때 혼났던 일 중 아직도 억울한 것이 있나요?",
+  "어린 시절 여름 방학의 하루를 아침부터 저녁까지 떠올려 보세요. 어떤 장면이 가장 선명한가요?",
+  "선생님에게 들은 말 중 지금까지 남아 있는 한마디가 있나요?",
+  "어릴 때 부모님이나 보호자가 낯설게 느껴진 순간이 있었나요?",
+  "어린 시절 즐겨 보던 텔레비전 프로그램이 끝나면 무엇을 했나요?",
+  "처음으로 받은 용돈으로 무엇을 샀나요?",
+  "어린 시절 키웠던 동물이나 식물이 있었나요? 그 끝은 어땠나요?",
+  "비가 오던 날의 어린 시절 기억 하나를 떠올려 보세요. 당신은 어디에 있었나요?",
+  "어릴 때 '어른이 되면 꼭 해야지' 다짐했던 것이 있었나요? 지금은 어떻게 됐나요?",
+  "학교 운동회나 소풍날, 도시락 뚜껑을 열었을 때 무엇이 들어 있었나요?",
+  "어릴 때 동네에서 소문이 돌던 사람이나 장소가 있었나요?",
+  "처음 이사를 갔던 날, 떠나온 집에 무엇을 두고 왔나요?",
+  "어린 시절 누군가의 손을 잡고 걸었던 길이 있나요? 그 손은 어떤 느낌이었나요?",
+  "어릴 때 혼자 집을 지키던 날, 무엇을 하며 시간을 보냈나요?",
+  "어린 시절 가장 크게 웃었던 날을 기억하나요? 누가 옆에 있었나요?",
+  "처음으로 누군가를 부러워했던 기억은 무엇인가요?",
+  "어린 시절 잠들기 전 천장을 보며 무슨 생각을 했나요?",
+  "할머니나 할아버지, 혹은 나이 많은 어른의 집에서 기억나는 물건이 있나요?",
+  "어릴 때 친구와 했던 약속 중 지켜지지 않은 것이 있나요?"
+];
+
+const FIRST = [
+  "그날 이후로 나는 엘리베이터를 타지 않는다.",
+  "아버지가 처음으로 내게 사과한 건 서른두 살 겨울이었다.",
+  "나는 매년 같은 날, 같은 사람에게 문자를 보내고 답장을 받지 않는다.",
+  "이사를 하면서 버리지 못한 상자가 하나 있다.",
+  "회사를 그만둔 이유를 아직 아무에게도 정확히 말하지 않았다.",
+  "나는 열 살 때 처음으로 경찰서에 갔다.",
+  "그 식당은 지금도 그 자리에 있지만, 나는 일부러 돌아서 간다.",
+  "우리 집에는 아무도 앉지 않는 의자가 하나 있었다.",
+  "엄마는 내 이름을 두 번 바꿀 뻔했다고 했다.",
+  "나는 운전면허 시험에 다섯 번 떨어졌고, 그중 세 번은 일부러였다.",
+  "친구의 결혼식에서 나는 축사 대신 사과를 했다.",
+  "할머니의 장례식에서 처음 보는 사람이 내 손을 오래 잡았다.",
+  "그해 나는 일기를 쓰지 않기로 했다.",
+  "통장에 잔액이 정확히 만 원 남았던 날을 기억한다.",
+  "나는 그 사람의 전화번호를 지우고 나서 오히려 외워 버렸다.",
+  "동생과 나는 7년 동안 같은 방을 썼고, 그동안 한 번도 제대로 싸우지 않았다.",
+  "내가 가장 오래 다닌 곳은 학교도 회사도 아닌 동네 세탁소였다.",
+  "처음 받은 월급으로 나는 아무에게도 말하지 않은 것을 샀다.",
+  "그날 나는 처음으로 지하철을 반대 방향으로 끝까지 타 보았다.",
+  "나는 서른 살이 넘어서야 수영을 배웠다.",
+  "아무도 내가 그 상을 받은 사실을 모른다.",
+  "그 편지는 지금도 뜯지 않은 채 서랍에 있다.",
+  "나는 한동안 매일 같은 시간에 같은 편의점 앞에 서 있었다.",
+  "우리 가족은 그 일에 대해 단 한 번도 이야기하지 않았다."
+];
+
+const LAST = [
+  "그래서 나는 지금도 우산을 두 개씩 들고 다닌다.",
+  "그 뒤로 나는 그 노래를 끝까지 듣지 못한다.",
+  "결국 그 상자는 다시 테이프로 봉해졌다.",
+  "그날 저녁, 우리는 아무 일도 없었던 것처럼 밥을 먹었다.",
+  "나는 그 번호로 다시는 전화하지 않았다.",
+  "그것이 내가 기억하는 아버지의 마지막 농담이었다.",
+  "그 후로 나는 누구에게도 내 생일을 먼저 말하지 않는다.",
+  "나는 아직도 그 의자에 앉지 않는다.",
+  "그렇게 나는 열두 번째 이력서를 지웠다.",
+  "그해 겨울은 생각보다 빨리 끝났다.",
+  "그 식당의 간판은 그 다음 달에 내려졌다.",
+  "그 사람은 끝내 내 이름을 기억하지 못했다.",
+  "그리고 나는 처음으로 그 길을 혼자 걸어서 돌아왔다.",
+  "그 열쇠가 어디에 맞는 것이었는지는 지금도 모른다.",
+  "나는 그 일을 아직 엄마에게 말하지 않았다.",
+  "그날 이후 우리 집 현관문은 늘 조금 열려 있었다.",
+  "그렇게 해서 나는 그 동네를 떠났다.",
+  "그것이 우리가 함께 찍은 유일한 사진이다.",
+  "그래서 나는 지금도 수요일마다 같은 빵을 산다.",
+  "그 대답을 듣기까지 꼬박 십 년이 걸렸다."
+];
+
+const RULES = {
+  "형식":[
+    "모든 문장을 15자 이내로 쓰기",
+    "모든 문장을 질문으로 쓰기",
+    "편지 형식으로 쓰기",
+    "일기 형식으로 날짜를 세 번 이상 넣어 쓰기",
+    "목록(1, 2, 3…) 형식으로만 쓰기",
+    "대화문으로만 쓰기",
+    "정확히 일곱 문장으로 쓰기"
+  ],
+  "금지":[
+    "'나'라는 단어를 쓰지 않기",
+    "형용사를 하나도 쓰지 않기",
+    "'그리고', '그래서', '하지만' 같은 접속사 쓰지 않기",
+    "감정을 나타내는 단어(슬프다, 기쁘다 등) 쓰지 않기",
+    "색깔을 나타내는 단어 쓰지 않기",
+    "과거형을 쓰지 않고 현재형으로만 쓰기",
+    "'것'이라는 단어 쓰지 않기",
+    "느낌표와 말줄임표 쓰지 않기"
+  ],
+  "포함":[
+    "숫자를 세 번 이상 넣기",
+    "냄새에 대한 묘사를 한 번 넣기",
+    "실제 지명 하나를 넣기",
+    "누군가에게 들은 말 한마디를 그대로 인용하기",
+    "날씨를 한 줄 넣되 '날씨'라는 단어는 쓰지 않기",
+    "손에 쥘 수 있는 물건 두 개 등장시키기",
+    "속담이나 관용구 하나 넣기",
+    "소리를 흉내 내는 말(의성어) 하나 넣기"
+  ],
+  "시점":[
+    "2인칭 '너'에게 말하듯 쓰기",
+    "10년 뒤의 내가 지금을 돌아보는 시점으로 쓰기",
+    "단 10분 동안 일어난 일만 쓰기",
+    "끝에서부터 거꾸로 시간 순서로 쓰기",
+    "3인칭으로 나를 '그 사람'이라고 부르며 쓰기",
+    "오늘 하루 중 가장 사소한 순간 하나만 쓰기"
+  ],
+  "분량":[
+    "300자 이내로 끝내기",
+    "정확히 세 문단으로 쓰기",
+    "10분 타이머를 맞추고 멈추지 않고 쓰기",
+    "첫 문단과 마지막 문단을 같은 문장으로 시작하기"
+  ]
+};
+
+const PAIRS = [
+  ["냉장고","첫사랑","둘 다 문을 열 때마다 조금씩 차가운 공기가 빠져나간다."],
+  ["치과","바다","둘 다 들어가기 전에 숨을 크게 들이쉬게 된다."],
+  ["영수증","고래","가장 긴 것은 늘 끝까지 보지 않고 버려진다."],
+  ["엘리베이터","할머니","오르내리는 동안 아무도 말을 걸지 않는다."],
+  ["지우개","이사","무언가를 없앨수록 자신도 조금씩 작아진다."],
+  ["비둘기","면접","둘 다 같은 자리를 맴돌며 다음 기회를 기다린다."],
+  ["양말","행성","짝을 잃은 쪽은 궤도를 벗어난다."],
+  ["콘센트","사과","꽂혀야만 무언가가 흐르기 시작한다."],
+  ["달팽이","월급날","느리게 오고, 지나간 자리엔 흔적만 남는다."],
+  ["와이파이","고향","끊기고 나서야 얼마나 기대고 있었는지 안다."],
+  ["압정","생일","작은 것 하나가 하루 전체를 붙잡아 둔다."],
+  ["사막","단톡방","아무도 대답하지 않는 곳에서 신기루가 생긴다."],
+  ["계란","거짓말","깨지는 순간을 정확히 고를 수는 없다."],
+  ["신호등","편지","기다리는 시간이 대부분이다."],
+  ["빙하","택배","도착하는 건 늘 떠날 때와 조금 다른 모양이다."],
+  ["모기","철학","잠들려는 순간에 가장 크게 들린다."],
+  ["주차장","이름","자리를 비워 두어도 누군가의 것으로 남는다."],
+  ["바늘","도시","작은 구멍으로 거대한 것을 통과시킨다."],
+  ["손톱","역사","잘라내도 계속 자란다."],
+  ["번개","장보기 목록","적어 두지 않으면 순식간에 사라진다."],
+  ["우체통","심장","받기만 하고 스스로 열지는 못한다."],
+  ["수족관","출근길","유리 너머의 얼굴들은 서로를 보지 않는다."],
+  ["바코드","별자리","선과 점 속에 누군가 의미를 읽어 낸다."],
+  ["체온계","침묵","숫자가 멈출 때까지 기다려야 한다."],
+  ["빨래","전쟁","널고 나면 바람이 결과를 정한다."],
+  ["계산기","자장가","같은 결과를 반복해서 들려준다."],
+  ["낙엽","비밀번호","바뀌는 걸 알면서도 매번 새로 외운다."],
+  ["돋보기","이별","가까이 댈수록 뜨거워진다."],
+  ["지하철 노선도","가계도","갈아타는 지점마다 누군가 내린다."],
+  ["소금","박물관","오래 보존하려면 무언가를 말려야 한다."],
+  ["선풍기","소문","고개를 돌리는 쪽으로 바람이 퍼진다."],
+  ["벽지","전생","한 겹을 벗기면 또 다른 무늬가 나온다."]
+];
+
+/* ---------- 유틸 ---------- */
+const $ = s => document.querySelector(s);
+const rand = a => a[Math.floor(Math.random()*a.length)];
+function sample(a,n){const c=a.slice();for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]]}return c.slice(0,n)}
+function hasBatchim(w){const c=w.charCodeAt(w.length-1);if(c<0xAC00||c>0xD7A3)return false;return (c-0xAC00)%28!==0}
+function fill(t,o){const b=hasBatchim(o);
+  return t.replace(/\{o\}/g,o).replace(/\{은\}/g,b?"은":"는").replace(/\{이\}/g,b?"이":"가")
+          .replace(/\{을\}/g,b?"을":"를").replace(/\{와\}/g,b?"과":"와");}
+function store(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("on"),1600)}
+function noRepeat(key,arr){let last=state.last[key];let v;do{v=rand(arr)}while(arr.length>1&&JSON.stringify(v)===JSON.stringify(last));state.last[key]=v;return v}
+
+/* ---------- 탭 ---------- */
+const TABS = [
+  {id:"p1",name:"물건 심문하기"},
+  {id:"p2",name:"기억 발굴하기"},
+  {id:"p3",name:"첫·끝 문장 잇기"},
+  {id:"p4",name:"랜덤 규칙"},
+  {id:"p5",name:"두 단어 연결"}
+];
+const state = {tab:0,last:{},lineMode:"first",current:["","","","",""]};
+
+const nav=$("#tabs");
+TABS.forEach((t,i)=>{const b=document.createElement("button");b.type="button";b.setAttribute("role","tab");
+  b.innerHTML=`<span class="n">${i+1}</span>${t.name}`;b.onclick=()=>showTab(i);nav.appendChild(b)});
+
+/* ---------- 생성기 ---------- */
+const GEN = [
+  ()=>{const o=noRepeat("obj",OBJECTS);$("#obj").textContent=o;
+    $("#objQs").innerHTML=sample(OBJ_Q,5).map(q=>`<li>${fill(q,o)}</li>`).join("");
+    return `물건: ${o}`},
+  ()=>{const q=noRepeat("mem",MEMORY);$("#mem").textContent=q;return q},
+  ()=>{const first=state.lineMode==="first";const s=noRepeat("line"+state.lineMode,first?FIRST:LAST);
+    $("#line").textContent=s;$("#lineLabel").textContent=first?"이 문장으로 시작하세요":"이 문장으로 끝나도록 쓰세요";
+    return (first?"첫 문장: ":"끝 문장: ")+s},
+  ()=>{const cats=sample(Object.keys(RULES),3);const picks=cats.map(c=>[c,rand(RULES[c])]);
+    $("#rules").innerHTML=picks.map(([c,r])=>`<li><span class="tag">${c}</span><span>${r}</span></li>`).join("");
+    return "미션: "+picks.map(p=>p[1]).join(" / ")},
+  ()=>{let [a,b,h]=noRepeat("pair",PAIRS);if(Math.random()<.5)[a,b]=[b,a];
+    $("#w1").textContent=a;$("#w2").textContent=b;$("#hint").textContent=h;return `${a} × ${b}`}
+];
+
+function showTab(i){
+  state.tab=i;
+  [...nav.children].forEach((b,j)=>b.setAttribute("aria-selected",j===i));
+  document.querySelectorAll(".panel").forEach((p,j)=>p.classList.toggle("on",j===i));
+  if(!state.current[i])state.current[i]=GEN[i]();
+  $("#draft").value=store("draft"+i)||"";updateCount();
+  store("tab",i);
+}
+$("#next").onclick=()=>{state.current[state.tab]=GEN[state.tab]()};
+
+document.querySelectorAll("#lineMode button").forEach(b=>b.onclick=()=>{
+  state.lineMode=b.dataset.m;
+  document.querySelectorAll("#lineMode button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  state.current[2]=GEN[2]();
+});
+
+/* ---------- 쓰기 & 보관함 ---------- */
+const draft=$("#draft");
+function updateCount(){$("#count").textContent=draft.value.replace(/\s/g,"").length+"자 (공백 제외)"}
+let saveT;
+draft.addEventListener("input",()=>{updateCount();clearTimeout(saveT);
+  saveT=setTimeout(()=>{store("draft"+state.tab,draft.value);$("#saved").textContent="임시 저장됨"},500)});
+
+function renderList(){
+  const list=store("archive")||[];const el=$("#list");
+  if(!list.length){el.innerHTML='<p class="empty">아직 저장한 글이 없어요.</p>';return}
+  el.innerHTML="";
+  list.forEach((e,i)=>{const d=document.createElement("div");d.className="entry";
+    d.innerHTML=`<div class="top"><span>${TABS[e.tab].name} · ${e.date}</span><span><button data-a="open">펼치기</button><button data-a="del">삭제</button></span></div>`;
+    const p=document.createElement("p");p.className="p";p.textContent=e.prompt;
+    const t=document.createElement("p");t.className="t";t.textContent=e.text;d.append(p,t);
+    d.querySelector('[data-a="open"]').onclick=ev=>{d.classList.toggle("open");ev.target.textContent=d.classList.contains("open")?"접기":"펼치기"};
+    d.querySelector('[data-a="del"]').onclick=()=>{if(!confirm("이 글을 삭제할까요?"))return;list.splice(i,1);store("archive",list);renderList()};
+    el.appendChild(d)});
+}
+$("#save").onclick=()=>{
+  const text=draft.value.trim();if(!text){toast("먼저 글을 써 주세요");return}
+  const list=store("archive")||[];const now=new Date();
+  list.unshift({tab:state.tab,prompt:state.current[state.tab],text,
+    date:`${now.getFullYear()}.${now.getMonth()+1}.${now.getDate()}`});
+  store("archive",list);draft.value="";store("draft"+state.tab,"");updateCount();$("#saved").textContent="";
+  renderList();toast("보관함에 저장했어요");
+};
+
+renderList();
+showTab(Math.min(store("tab")||0,TABS.length-1));
+</script>
+</body>
+</html>
