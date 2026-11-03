@@ -411,7 +411,10 @@ function renderList(){
     const p=document.createElement("p");p.className="p";p.textContent=e.prompt;
     const t=document.createElement("p");t.className="t";t.textContent=e.text;d.append(p,t);
     d.querySelector('[data-a="open"]').onclick=ev=>{d.classList.toggle("open");ev.target.textContent=d.classList.contains("open")?"접기":"펼치기"};
-    d.querySelector('[data-a="del"]').onclick=()=>{if(!confirm("이 글을 삭제할까요?"))return;list.splice(i,1);store("archive",list);renderList()};
+    const del=d.querySelector('[data-a="del"]');
+    del.onclick=()=>{if(!del.dataset.armed){del.dataset.armed="1";del.textContent="한 번 더 누르면 삭제";del.style.color="#c0392b";
+        setTimeout(()=>{if(del.isConnected){delete del.dataset.armed;del.textContent="삭제";del.style.color=""}},3000);return}
+      list.splice(i,1);store("archive",list);renderList();toast("삭제했어요")};
     el.appendChild(d)});
 }
 $("#save").onclick=()=>{
